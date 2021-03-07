@@ -1,45 +1,31 @@
 
 #include "BMS_Display.h"
 
-static int CheckParameterWarningLowerLimit(float Paramvalue_f, float ParamLowerLimit_f)
+static int CheckParameterUpperLimit(Parameter_tst ParamProperties_st,float ParamVal_f)
 {
     int returnVal_u8=0;
-    int temp;
 
-    temp =  ((5 * ParamLowerLimit_f) / 100);
-    returnVal_u8 = Paramvalue_f <= ParamLowerLimit_f+temp ? 1 : 0;
+    returnVal_u8 = ParamVal_f > ParamProperties_st.UL ? 1 : 0;
+
+    if((returnVal_u8==0) &&(ParamVal_f > ParamProperties_st.HigherWarningLimit))
+    {
+        DisplayParameterULWarningStatus(ParamProperties_st.ParamName,ParamVal_f);
+    }
 
     return returnVal_u8;
 
 }
 
-static int CheckParameterWarningUpperLimit(float Paramvalue_f, float ParamUpperLimit_f)
-{
-    int returnVal_u8=0;
-    int temp;
-
-    temp =  ((5 * ParamUpperLimit_f) / 100);
-    returnVal_u8 = Paramvalue_f > ParamUpperLimit_f-temp ? 1 : 0;
-
-    return returnVal_u8;
-
-}
-
-static int CheckParameterUpperLimit(float Paramvalue_f, float ParamUpperLimit_f)
+static int CheckParameterLowerLimit(Parameter_tst ParamProperties_st,float ParamVal_f)
 {
     int returnVal_u8=0;
 
-    returnVal_u8 = Paramvalue_f > ParamUpperLimit_f ? 1 : 0;
+    returnVal_u8 = ParamVal_f < ParamProperties_st.LL ? 1 : 0;
 
-    return returnVal_u8;
-
-}
-
-static int CheckParameterLowerLimit(float Paramvalue_f, float ParamLowerLimit_f)
-{
-    int returnVal_u8=0;
-
-    returnVal_u8 = Paramvalue_f < ParamLowerLimit_f ? 1 : 0;
+    if((returnVal_u8==0) && (ParamVal_f <= ParamProperties_st.LowerWarningLimit))
+    {
+        DisplayParameterLLWarningStatus(ParamProperties_st.ParamName,ParamVal_f);
+    }
 
     return returnVal_u8;
 
@@ -47,27 +33,27 @@ static int CheckParameterLowerLimit(float Paramvalue_f, float ParamLowerLimit_f)
 
 int CheckTemperatureInRange(float ParamVal_f, float UL, float LL)
 {
+    Parameter_tst TemperatureProperties_st;
     int returnVal_u8 = 1;
-    char *BatterParameterName = "Temperature";
 
-    if( CheckParameterLowerLimit(ParamVal_f,LL))
+    TemperatureProperties_st.ParamName = "Temperature";
+    TemperatureProperties_st.UL = TEMPERATURE_UL;
+    TemperatureProperties_st.LL = TEMPERATURE_LL;
+    TemperatureProperties_st.LowerWarningLimit = (LL+((5*TEMPERATURE_LL)/100));
+    TemperatureProperties_st.HigherWarningLimit = (UL-((5*TEMPERATURE_UL)/100)) ;
+
+    if( CheckParameterLowerLimit(TemperatureProperties_st,ParamVal_f))
     {
-        DisplayParameterLLErrorStatus(BatterParameterName,LL);
+        DisplayParameterLLErrorStatus(TemperatureProperties_st.ParamName ,LL);
         returnVal_u8 = 0;
     }
-    else if(CheckParameterUpperLimit(ParamVal_f,UL))
+    else if(CheckParameterUpperLimit(TemperatureProperties_st,ParamVal_f))
     {
-        DisplayParameterULErrorStatus(BatterParameterName,UL);
+        DisplayParameterULErrorStatus(TemperatureProperties_st.ParamName ,UL);
         returnVal_u8 = 0;
     }
-    else if(CheckParameterWarningLowerLimit(ParamVal_f,LL))
+    else
     {
-        DisplayParameterLLWarningStatus(BatterParameterName,ParamVal_f);
-
-    }
-    else if(CheckParameterWarningUpperLimit(ParamVal_f,UL))
-    {
-        DisplayParameterULWarningStatus(BatterParameterName,ParamVal_f);
 
     }
 
@@ -76,27 +62,27 @@ int CheckTemperatureInRange(float ParamVal_f, float UL, float LL)
 
 int CheckSocInRange(float ParamVal_f, float UL, float LL)
 {
+    Parameter_tst SOCProperties_st;
     int returnVal_u8 = 1;
-    char *BatterParameterName = "State of Charge";
 
-    if( CheckParameterLowerLimit(ParamVal_f,LL))
+    SOCProperties_st.ParamName = "State of Charge";
+    SOCProperties_st.UL = SOC_UL;
+    SOCProperties_st.LL = SOC_LL;
+    SOCProperties_st.LowerWarningLimit = (LL+((5*SOC_LL)/100));
+    SOCProperties_st.HigherWarningLimit = (UL-((5*SOC_UL)/100)) ;
+
+    if( CheckParameterLowerLimit(SOCProperties_st,ParamVal_f))
     {
-        DisplayParameterLLErrorStatus(BatterParameterName,LL);
+        DisplayParameterLLErrorStatus(SOCProperties_st.ParamName ,LL);
         returnVal_u8 = 0;
     }
-    else if(CheckParameterUpperLimit(ParamVal_f,UL))
+    else if(CheckParameterUpperLimit(SOCProperties_st,ParamVal_f))
     {
-        DisplayParameterULErrorStatus(BatterParameterName,UL);
+        DisplayParameterULErrorStatus(SOCProperties_st.ParamName ,UL);
         returnVal_u8 = 0;
     }
-    else if(CheckParameterWarningLowerLimit(ParamVal_f,LL))
+    else
     {
-        DisplayParameterLLWarningStatus(BatterParameterName,ParamVal_f);
-
-    }
-    else if(CheckParameterWarningUpperLimit(ParamVal_f,UL))
-    {
-        DisplayParameterULWarningStatus(BatterParameterName,ParamVal_f);
 
     }
     return returnVal_u8;
@@ -104,18 +90,19 @@ int CheckSocInRange(float ParamVal_f, float UL, float LL)
 
 int CheckChargeRateInRange(float ParamVal_f, float UL)
 {
+    Parameter_tst CRProperties_st;
     int returnVal_u8 = 1;
-    char *BatterParameterName = "Charge Rate";
 
-    if(CheckParameterUpperLimit(ParamVal_f,UL))
+    CRProperties_st.ParamName = "Charge Rate";
+    CRProperties_st.UL = CHARGERATE_UL;
+    CRProperties_st.LL = 0;
+    CRProperties_st.LowerWarningLimit = 0;
+    CRProperties_st.HigherWarningLimit = (UL-((5*CHARGERATE_UL)/100)) ;
+
+    if(CheckParameterUpperLimit(CRProperties_st,ParamVal_f))
     {
-        DisplayParameterULErrorStatus(BatterParameterName,UL);
+        DisplayParameterULErrorStatus(CRProperties_st.ParamName ,UL);
         returnVal_u8 = 0;
-    }
-    else if(CheckParameterWarningUpperLimit(ParamVal_f,UL))
-    {
-        DisplayParameterULWarningStatus(BatterParameterName,ParamVal_f);
-
     }
 
     return returnVal_u8;
