@@ -27,8 +27,14 @@ static int batteryIsOk(float temperature, float soc, float chargeRate)
 
 int main()
 {
+    int ret;
 
-    while(SelectLanguage());
+    ret = SelectLanguage();
+    
+    if(ret == 1)
+    {
+        return 1;
+    }
 
     assert(batteryIsOk(25, 70, 0.7));
     assert(!batteryIsOk(-1, 80, 0));
