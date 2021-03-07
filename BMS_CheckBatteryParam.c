@@ -50,8 +50,6 @@ int CheckTemperatureInRange(float ParamVal_f, float UL, float LL)
     int returnVal_u8 = 1;
     char *BatterParameterName = "Temperature";
 
-    returnVal_u8 = CheckAndDispalyTempearture(BatterParameterName,ParamVal_f,LL,UL);
-
     if( CheckParameterLowerLimit(ParamVal_f,LL))
     {
         DisplayParameterLLErrorStatus(BatterParameterName,LL);
