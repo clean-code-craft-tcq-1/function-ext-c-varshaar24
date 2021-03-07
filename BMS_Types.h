@@ -10,7 +10,15 @@
 #define SOC_LL 20
 #define CHARGERATE_UL 0.8
 
-#define WARNING_LIMIT_IN_PERCENT (float)5
+typedef struct
+{
+    char * ParamName;
+    float UL;
+    float LL;
+    float LowerWarningLimit;
+    float HigherWarningLimit;
+
+}Parameter_tst;
 
 
 
