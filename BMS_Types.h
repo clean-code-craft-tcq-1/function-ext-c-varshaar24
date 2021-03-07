@@ -9,6 +9,7 @@
 #define SOC_UL 80
 #define SOC_LL 20
 #define CHARGERATE_UL 0.8
+#define Language_u8 1
 
 typedef struct
 {
