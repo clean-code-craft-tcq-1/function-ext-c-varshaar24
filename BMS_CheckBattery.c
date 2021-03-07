@@ -16,7 +16,6 @@ static int batteryIsOk(float temperature, float soc, float chargeRate)
     Rateerr_b = !CheckChargeRateInRange(chargeRate,(float)CHARGERATE_UL);
 
     Ret = ((Temperr_b | Socerr_b | Rateerr_b) != 0) ? 0 : 1;
-
     if(Ret == 1)
     {
         DisplayBatteryFineStatus();
@@ -27,15 +26,6 @@ static int batteryIsOk(float temperature, float soc, float chargeRate)
 
 int main()
 {
-    int ret;
-
-    ret = SelectLanguage();
-    
-    if(ret == 1)
-    {
-        return 1;
-    }
-
     assert(batteryIsOk(25, 70, 0.7));
     assert(!batteryIsOk(-1, 80, 0));
     assert(!batteryIsOk(50, 85, 0));
