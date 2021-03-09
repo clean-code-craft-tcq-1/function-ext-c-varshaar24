@@ -4,14 +4,18 @@
 static int CheckParameterUpperLimit(Parameter_tst ParamProperties_st,float ParamVal_f)
 {
     int returnVal_u8=0;
-
-    returnVal_u8 = ParamVal_f > ParamProperties_st.UL ? 1 : 0;
-
-    if((returnVal_u8==0) &&(ParamVal_f > ParamProperties_st.HigherWarningLimit))
+    
+    if(ParamVal_f > ParamProperties_st.UL)
     {
-        DisplayParameterULWarningStatus(ParamProperties_st.ParamName,ParamVal_f);
+        returnVal_u8 = 1;
     }
-
+    else
+    {
+        if(ParamVal_f > ParamProperties_st.HigherWarningLimit)
+        {
+            DisplayParameterULWarningStatus(ParamProperties_st.ParamName,ParamVal_f);
+        }
+    }
     return returnVal_u8;
 
 }
