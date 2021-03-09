@@ -23,12 +23,17 @@ static int CheckParameterUpperLimit(Parameter_tst ParamProperties_st,float Param
 static int CheckParameterLowerLimit(Parameter_tst ParamProperties_st,float ParamVal_f)
 {
     int returnVal_u8=0;
-
-    returnVal_u8 = ParamVal_f < ParamProperties_st.LL ? 1 : 0;
-
-    if((returnVal_u8==0) && (ParamVal_f <= ParamProperties_st.LowerWarningLimit))
+    
+    if(ParamVal_f < ParamProperties_st.LL)
     {
-        DisplayParameterLLWarningStatus(ParamProperties_st.ParamName,ParamVal_f);
+         returnVal_u8 = 1;
+    }
+    else
+    {
+        if(ParamVal_f <= ParamProperties_st.LowerWarningLimit)
+        {
+            DisplayParameterLLWarningStatus(ParamProperties_st.ParamName,ParamVal_f);
+        }
     }
 
     return returnVal_u8;
